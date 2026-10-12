@@ -1,0 +1,10 @@
+# Incorrect acceptance criteria — rejected
+
+- **“Day 2 closing ledger balance ... is AED -370.00.”** The arithmetic is correct before fees: 1,200 - 950 - 620 = -370. However, this is not necessarily the final Day 2 balance if fees are included in the ledger. The specification does not clarify whether the fee is included in the displayed closing ledger balance.
+- **“E7 causes exactly one overdraft fee to be assessed, on Day 2.”** Not safely assertable without the fee-booking and reversal semantics. A later E9 backdated reversal may remove the cause for that fee; the final replay must not leave a stale fee if fees are derived from current event state.
+- **“The Day 4 settlement of Auth-A must be accepted.”** Acceptance is reasonable if Auth-A was approved and the 185 settlement is within the remaining 200 hold. But the spec should define whether a partial settlement releases only 185 or the entire hold.
+- **“Any settlement referencing an authorization ID not present in the ledger must be rejected and the funds must leave the account.”** The rejection is correct; the second clause is contradictory. Rejected settlements must not move funds out of the account.
+- **“If Auth-B is approved, its hold reduces available balance but not ledger balance.”** Correct as a general rule. Whether it is approved depends on the available balance at E8 and on the treatment of prior value-dated entries and fees.
+- **“After E9, all balances and fees return to their pre-E7 values.”** Overbroad. Reversing E7 should reverse E7's principal effect at its value date, but other legitimate entries (such as E4 and E5) remain. Fees return only if they are derived/recomputed or explicitly reversed.
+- **“The three BHD instalments E10 must each be BHD 3.334.”** Incorrect: 3 × 3.334 = 10.002, not 10.000. A valid split is 3.333 + 3.333 + 3.334.
+- **“If rounded daily interest accruals do not sum to the stated total, the remainder is discarded.”** Incorrect as a general accounting rule unless explicitly specified. Rounding residuals should be reconciled transparently; do not silently discard amounts.
